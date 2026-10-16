@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Complaints</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            padding: 25px;
+        }
+        h1 { color: #1e3a8a; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background: #1d4ed8;
+            color: white;
+        }
+        a { color: #1d4ed8; }
+    </style>
+</head>
+<body>
+    <h1>Manage Complaints</h1>
+
+    <p><a href="{{ url_for('admin.dashboard') }}">
+        Back to Dashboard
+    </a></p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Complaint ID</th>
+                <th>User ID</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Department</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for complaint in complaints %}
+            <tr>
+                <td>{{ complaint['complaint_id'] }}</td>
+                <td>{{ complaint['user_id'] }}</td>
+                <td>{{ complaint['category'] }}</td>
+                <td>{{ complaint['status'] }}</td>
+                <td>{{ complaint['department'] }}</td>
+                <td>
+                    <a href="{{ url_for(
+                        'admin.complaint_details',
+                        complaint_id=complaint['complaint_id']
+                    ) }}">View / Update</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6">No complaints found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

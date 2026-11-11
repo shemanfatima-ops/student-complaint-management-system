@@ -6,6 +6,7 @@ import os
 from routes.auth import auth_bp
 from routes.complaints import complaints_bp
 from routes.admin import admin_bp
+from routes.tracking import tracking_bp
 
 app = Flask(__name__)
 app.secret_key = "dev-secret-key-change-later"
@@ -48,6 +49,7 @@ def init_db():
 app.register_blueprint(auth_bp)
 app.register_blueprint(complaints_bp)
 app.register_blueprint(admin_bp)
+app.register_blueprint(tracking_bp)
 
 
 @app.route("/")

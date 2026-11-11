@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Complaint {{ c.complaint_id }}</h1>
+
+<p><b>Category:</b> {{ c.category }}</p>
+<p><b>Description:</b> {{ c.description }}</p>
+<p><b>Current Status:</b> {{ c.status }}</p>
+<p><b>Department:</b> {{ c.department }}</p>
+<p><b>Admin Response:</b> {{ c.admin_response or 'No response yet' }}</p>
+
+<h2>Status Timeline</h2>
+<ul>
+  <li>{{ c.created_at }}: <b>Pending</b> - Complaint submitted</li>
+  {% for h in history %}
+  <li>{{ h.changed_at }}: <b>{{ h.status }}</b> - {{ h.note }}</li>
+  {% endfor %}
+</ul>
+
+<a href="{{ url_for('tracking.my_complaints') }}">Back</a>
+{% endblock %}

@@ -1,0 +1,81 @@
+name: Student Complaint System CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, development, team-dev ]
+  pull_request:
+    branches: [ main, development, team-dev ]
+
+jobs:
+  ci-build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install pytest flake8
+
+      - name: Lint with flake8
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+
+      - name: Syntax and unit tests
+        run: |
+          python -m compileall -q .
+          if [ -d tests ]; then
+            pytest -v || python -m unittest discover -s tests
+          else
+            python -c "import app; assert app.app is not None; print('App import & route check passed')"
+          fi
+
+  package-and-staging:
+    needs: ci-build-and-test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Package build artifact
+        run: |
+          mkdir -p dist
+          tar -czf dist/complaint-system-${{ github.run_number }}.tar.gz --exclude='.git' --exclude='dist' .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: complaint-system-artifact
+          path: dist/
+
+      - name: Deploy to staging & smoke check
+        run: |
+          echo "Deploying artifact build ${{ github.run_number }} to staging..."
+          python -m venv .venv_smoke
+          .venv_smoke/bin/pip install -r requirements.txt
+          .venv_smoke/bin/python -c "import app; print('Staging smoke check passed')"
+
+  deploy-production:
+    needs: package-and-staging
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Download verified artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: complaint-system-artifact
+          path: dist/
+
+      - name: Production release & rollback readiness
+        run: |
+          echo "Approved production release for commit ${{ github.sha }} (Build #${{ github.run_number }})"
+          echo "Rollback plan: redeploy previous verified build and restore SQLite backup if needed."

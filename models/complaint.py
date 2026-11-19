@@ -1,6 +1,7 @@
 import uuid
 import datetime
-import sqlite3
+
+from models.database import get_db_connection
 
 def generate_complaint_id():
     return "CMP-" + str(uuid.uuid4())[:8].upper()
@@ -10,16 +11,20 @@ def save_complaint(user_id, category, description):
     status = "Pending"
     department = "Unassigned"
     created_at = datetime.datetime.now().isoformat()
-    
-    conn = sqlite3.connect('database/database.db')
-    cursor = conn.cursor()
-    
-    cursor.execute('''
-        INSERT INTO complaints (complaint_id, user_id, category, description, status, department, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-    ''', (complaint_id, user_id, category, description, status, department, created_at))
-    
-    conn.commit()
-    conn.close()
-    
+
+    conn = get_db_connection()
+    try:
+        conn.execute(
+            """
+            INSERT INTO complaints (
+                complaint_id, user_id, category, description, status, department, created_at
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (complaint_id, user_id, category, description, status, department, created_at),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
     return complaint_id

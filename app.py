@@ -1,8 +1,9 @@
+import os
+import sqlite3
 
 from flask import Flask
-import sqlite3
-import os
 
+from models.database import init_db as initialize_database
 from routes.auth import auth_bp
 from routes.complaints import complaints_bp
 from routes.admin import admin_bp
@@ -10,21 +11,12 @@ from routes.tracking import tracking_bp
 
 app = Flask(__name__)
 app.secret_key = "dev-secret-key-change-later"
+app.config["DATABASE"] = os.path.join(os.path.dirname(__file__), "complaints.db")
 
 
 def init_db():
-    # Student users database
-    conn = sqlite3.connect("complaints.db")
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            email TEXT NOT NULL UNIQUE,
-            password_hash TEXT NOT NULL
-        )
-    """)
-    conn.commit()
-    conn.close()
+    with app.app_context():
+        initialize_database()
 
     # Complaints database
     os.makedirs("database", exist_ok=True)

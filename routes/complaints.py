@@ -5,10 +5,13 @@ complaints_bp = Blueprint('complaints', __name__)
 
 @complaints_bp.route('/submit-complaint', methods=['GET', 'POST'])
 def submit_complaint():
+    if "user_id" not in session:
+        return redirect(url_for("auth.login"))
+
     if request.method == 'POST':
-        user_id = session.get('user_id', 1) 
-        category = request.form.get('category')
-        description = request.form.get('description')
+        user_id = session["user_id"]
+        category = request.form.get('category', '').strip()
+        description = request.form.get('description', '').strip()
         
         if not category or not description:
             return "All fields are required!", 400

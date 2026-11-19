@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            margin: 0;
+            padding: 30px;
+        }
+        h1 { color: #1e3a8a; }
+        .cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            min-width: 130px;
+            box-shadow: 0 2px 8px #00000012;
+        }
+        a { color: #1d4ed8; }
+    </style>
+</head>
+<body>
+    <h1>Admin Dashboard</h1>
+    <p>Welcome, Admin!</p>
+
+    <div class="cards">
+        <div class="card">
+            <h3>Total Complaints</h3>
+            <h2>{{ total }}</h2>
+        </div>
+        <div class="card">
+            <h3>Pending</h3>
+            <h2>{{ pending }}</h2>
+        </div>
+        <div class="card">
+            <h3>In Progress</h3>
+            <h2>{{ in_progress }}</h2>
+        </div>
+        <div class="card">
+            <h3>Resolved</h3>
+            <h2>{{ resolved }}</h2>
+        </div>
+        <div class="card">
+            <h3>Rejected</h3>
+            <h2>{{ rejected }}</h2>
+        </div>
+    </div>
+
+    <p><a href="{{ url_for('admin.manage_complaints') }}">
+        Manage Complaints
+    </a></p>
+
+    <p><a href="{{ url_for('admin.admin_logout') }}">Logout</a></p>
+</body>
+</html>

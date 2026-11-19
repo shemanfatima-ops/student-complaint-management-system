@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Complaint Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            padding: 30px;
+        }
+        .container {
+            background: white;
+            max-width: 650px;
+            margin: auto;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px #00000012;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        input, select, textarea, button {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+        }
+        textarea { min-height: 100px; }
+        button {
+            background: #1d4ed8;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        a { color: #1d4ed8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Complaint Details</h1>
+
+        <p><strong>Complaint ID:</strong>
+            {{ complaint['complaint_id'] }}</p>
+
+        <p><strong>User ID:</strong>
+            {{ complaint['user_id'] }}</p>
+
+        <p><strong>Category:</strong>
+            {{ complaint['category'] }}</p>
+
+        <p><strong>Description:</strong>
+            {{ complaint['description'] }}</p>
+
+        <p><strong>Created At:</strong>
+            {{ complaint['created_at'] or 'Not available' }}</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="POST">
+            <label for="status">Complaint Status</label>
+            <select name="status" id="status" required>
+                <option value="Pending"
+                    {% if complaint['status'] == 'Pending' %}selected{% endif %}>
+                    Pending
+                </option>
+                <option value="In Progress"
+                    {% if complaint['status'] == 'In Progress' %}selected{% endif %}>
+                    In Progress
+                </option>
+                <option value="Resolved"
+                    {% if complaint['status'] == 'Resolved' %}selected{% endif %}>
+                    Resolved
+                </option>
+                <option value="Rejected"
+                    {% if complaint['status'] == 'Rejected' %}selected{% endif %}>
+                    Rejected
+                </option>
+            </select>
+
+            <label for="department">Department</label>
+            <select name="department" id="department" required>
+                <option value="">Select Department</option>
+                <option value="IT">IT</option>
+                <option value="Administration">Administration</option>
+                <option value="Examination">Examination</option>
+                <option value="Accounts">Accounts</option>
+                <option value="Unassigned">Unassigned</option>
+            </select>
+
+            <label for="admin_response">Admin Response</label>
+            <textarea name="admin_response" id="admin_response"
+                placeholder="Write your response here">{{ complaint['admin_response'] or '' }}</textarea>
+
+            <button type="submit">Update Complaint</button>
+        </form>
+
+        <p><a href="{{ url_for('admin.manage_complaints') }}">
+            Back to Complaints
+        </a></p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,26 @@
+name: Dev Pipeline
+
+on:
+  push:
+    branches: [development]
+  pull_request:
+    branches: [development]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - run: pytest tests/
+
+  deploy-staging:
+    needs: build-and-test
+    if: github.ref == 'refs/heads/development'
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - run: echo "Deploying to STAGING"

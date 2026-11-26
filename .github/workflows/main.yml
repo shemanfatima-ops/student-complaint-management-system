@@ -1,15 +1,14 @@
-name: CI Checks
+name: Main Pipeline
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [main]
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -26,13 +25,15 @@ jobs:
           pip install pytest
 
       - name: Check Python syntax
-        run: |
-          python -m compileall -q .
+        run: python -m compileall -q .
 
       - name: Run tests
-        run: |
-          if [ -d tests ]; then
-            pytest -v || python -m unittest discover -s tests
-          else
-            echo "No tests folder found; syntax check passed."
-          fi
+        run: pytest -v
+
+  deploy-prod:
+    needs: build-and-test
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - run: echo "Deploying to PRODUCTION"

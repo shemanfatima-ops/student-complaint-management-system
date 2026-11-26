@@ -221,3 +221,6 @@ __marimo__/
 complaints.db
 __pycache__/
 *.pyc
+
+.vscode/
+.pytest_cache/

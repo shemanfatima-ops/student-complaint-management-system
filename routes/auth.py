@@ -1,13 +1,9 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
+from models.database import get_db_connection
 
 auth_bp = Blueprint("auth", __name__)
-
-def get_db_connection():
-    conn = sqlite3.connect("complaints.db")
-    conn.row_factory = sqlite3.Row
-    return conn
 
 
 @auth_bp.route("/register", methods=["GET", "POST"])

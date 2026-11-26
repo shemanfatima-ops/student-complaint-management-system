@@ -15,6 +15,15 @@ jobs:
       - run: pip install -r requirements.txt
       - run: pytest tests/
 
+
+  deploy-staging:
+    needs: build-and-test
+    if: github.ref == 'refs/heads/development'
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - run: echo "Deploying to STAGING"
+
   deploy-prod:
     needs: build-and-test
     runs-on: ubuntu-latest
